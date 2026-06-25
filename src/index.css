@@ -1,0 +1,20 @@
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #1B1E23; /* совпадает с C.bg в App.jsx — чтобы не было белой вспышки при запуске */
+  -webkit-tap-highlight-color: transparent; /* убирает серую вспышку при тапе на Android/iOS WebView */
+  overscroll-behavior-y: none; /* отключает "резиновый" скролл-баунс, характерный для веба, не для нативных приложений */
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button, input, select {
+  -webkit-appearance: none;
+  appearance: none;
+}

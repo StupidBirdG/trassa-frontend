@@ -1,0 +1,9 @@
+{
+  "appId": "kz.trassa.app",
+  "appName": "Трасса",
+  "webDir": "dist",
+  "backgroundColor": "#1B1E23",
+  "server": {
+    "androidScheme": "https"
+  }
+}
