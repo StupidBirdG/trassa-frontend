@@ -1,10 +1,1 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-
-export default defineConfig({
-  plugins: [react()],
-  // Capacitor читает собранные файлы из dist/ и копирует их в нативный проект
-  build: {
-    outDir: 'dist',
-  },
-});
+import { defineConfig } from "vite"; import react from "@vitejs/plugin-react"; export default defineConfig({ plugins: [react()], build: { outDir: "dist" }, server: { proxy: { "/api": { target: "https://trassa-backend-production.up.railway.app", changeOrigin: true, secure: true } } } });
