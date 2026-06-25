@@ -9,23 +9,32 @@ const PORT = process.env.PORT || 3000;
 const BACKEND = "trassa-backend-production.up.railway.app";
 
 app.use("/api", (req, res) => {
-  const options = {
-    hostname: BACKEND,
-    port: 443,
-    path: "/api" + (req.url || "/"),
-    method: req.method,
-    headers: { ...req.headers, host: BACKEND }
-  };
-  delete options.headers["content-length"];
-  const proxyReq = httpsReq(options, (proxyRes) => {
-    res.writeHead(proxyRes.statusCode, proxyRes.headers);
-    proxyRes.pipe(res);
+  const chunks = [];
+  req.on("data", chunk => chunks.push(chunk));
+  req.on("end", () => {
+    const body = Buffer.concat(chunks);
+    const headers = Object.assign({}, req.headers, {
+      host: BACKEND,
+      "content-length": body.length
+    });
+    const options = {
+      hostname: BACKEND,
+      port: 443,
+      path: "/api" + (req.url || "/"),
+      method: req.method,
+      headers
+    };
+    const proxyReq = httpsReq(options, (proxyRes) => {
+      res.writeHead(proxyRes.statusCode, proxyRes.headers);
+      proxyRes.pipe(res);
+    });
+    proxyReq.on("error", (e) => {
+      console.error("Proxy error:", e.message);
+      if (!res.headersSent) res.status(502).json({ error: e.message });
+    });
+    if (body.length > 0) proxyReq.write(body);
+    proxyReq.end();
   });
-  proxyReq.on("error", (e) => {
-    console.error("Proxy error:", e.message);
-    if (!res.headersSent) res.status(502).json({ error: e.message });
-  });
-  req.pipe(proxyReq);
 });
 
 app.use(express.static(join(__dirname, "dist")));
