@@ -278,7 +278,7 @@ function PricingScreen({ sub, onActivate, onBack, busy }) {
 export default function TrassaApp({ user, onLogout }) {
   const [cargos, setCargos] = useState([]);
   const [sub, setSub] = useState(null);
-  const [role, setRole] = useState(user && user.role ? user.role : 'shipper');
+  const role = currentUser ? currentUser.role : (user && user.role ? user.role : 'shipper');
   const [showForm, setShowForm] = useState(false);
   const [cityFilter, setCityFilter] = useState('Все города');
   const [view, setView] = useState('board');
