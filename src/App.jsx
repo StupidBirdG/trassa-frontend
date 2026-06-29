@@ -14,7 +14,7 @@ const C = {
 
 const CITIES = ['Алматы','Астана','Шымкент','Караганда','Актобе','Тараз','Павлодар','Атырау','Кызылорда','Костанай','Усть-Каменогорск','Туркестан'];
 const CARGO_TYPES = ['Стройматериалы','Продукты питания','Бытовая техника','Металлопрокат','Текстиль','Сельхозтехника','Мебель','Промоборудование'];
-const TRUCK_TYPES = ['Тент 20т','Тент 5т','Рефрижератор','Борт','Изотерм','Площадка'];
+const TRUCK_TYPES = ['Тент 20т','Тент 5т','Рефрижератор','Борт','Изотерм','Площадкаh'];
 
 const DIST = {
   'Алматы-Шымкент':700,'Алматы-Астана':970,'Астана-Караганда':220,'Шымкент-Тараз':160,
@@ -278,7 +278,7 @@ function PricingScreen({ sub, onActivate, onBack, busy }) {
 export default function TrassaApp({ user, onLogout }) {
   const [cargos, setCargos] = useState([]);
   const [sub, setSub] = useState(null);
-  const role = currentUser ? currentUser.role : (user && user.role ? user.role : 'shipper');
+  const role = user?.role || 'shipper';
   const [showForm, setShowForm] = useState(false);
   const [cityFilter, setCityFilter] = useState('Все города');
   const [view, setView] = useState('board');
