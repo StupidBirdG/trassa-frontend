@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Truck, Package, Calendar, Star, Plus, X, CheckCircle2, Filter, Phone, Lock, Crown, MessageSquare } from 'lucide-react';
+import { Truck, Package, Calendar, Star, Plus, X, CheckCircle2, Filter, Phone, Lock, Crown, MessageSquare, UserCircle2 } from 'lucide-react';
 import { cargos as cargosApi, subscription as subApi, tokenStore } from './api.js';
 import ReviewModal from './ReviewModal.jsx';
 import { RatingBadge } from './UserRating.jsx';
+import ProfilePage from './ProfilePage.jsx';
 
 const C = {
   bg: '#1B1E23', surface: '#242830', surfaceAlt: '#2A2F38', border: '#383E48', borderLight: '#454B56',
@@ -208,7 +209,7 @@ function CargoForm({ onSubmit, onClose }) {
   );
 }
 
-function Header({ onLogout }) {
+function Header({ onLogout, onProfile }) {
   return (
     <div>
       <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
@@ -216,7 +217,10 @@ function Header({ onLogout }) {
           <Truck size={22} color={C.amber} />
           <span className="font-display" style={{ fontSize: 26, color: C.text, letterSpacing: '.04em' }}>ТРАССА</span>
         </div>
-        <button onClick={onLogout} style={{ fontSize: 11, color: C.mutedDark, background: 'transparent', border: '1px solid ' + C.border, borderRadius: 6, padding: '5px 10px', cursor: 'pointer' }}>Выйти</button>
+        <div style={{ display: 'flex', gap: 8 }}>
+<button onClick={onProfile} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, color: C.amber, background: C.amberDim, border: '1px solid ' + C.amber + '40', borderRadius: 6, padding: '5px 10px', cursor: 'pointer' }}><UserCircle2 size={12} /> Профиль</button>
+<button onClick={onLogout} style={{ fontSize: 11, color: C.mutedDark, background: 'transparent', border: '1px solid ' + C.border, borderRadius: 6, padding: '5px 10px', cursor: 'pointer' }}>Выйти</button>
+</div>
       </div>
       <div style={{ height: 3, marginTop: 10, marginBottom: 18, background: 'repeating-linear-gradient(90deg, ' + C.amber + ' 0 18px, transparent 18px 30px)', opacity: 0.6, borderRadius: 2 }} />
     </div>
@@ -281,6 +285,8 @@ export default function TrassaApp({ user, onLogout }) {
   const [loading, setLoading] = useState(true);
   const [subBusy, setSubBusy] = useState(false);
 const [reviewModal, setReviewModal] = useState(null);
+const [profileOpen, setProfileOpen] = useState(false);
+const [currentUser, setCurrentUser] = useState(user);
   const myUserId = user && user.id;
 
   const load = useCallback(async () => {
@@ -306,9 +312,12 @@ const [reviewModal, setReviewModal] = useState(null);
     <div className="font-body" style={{ background: C.bg, minHeight: '100vh', padding: '22px 22px calc(22px + env(safe-area-inset-bottom))', paddingTop: 'calc(22px + env(safe-area-inset-top))' }}>
       <style>{"@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap'); .font-display{font-family:'Oswald',sans-serif} .font-body{font-family:'Inter',sans-serif} .font-mono{font-family:'JetBrains Mono',monospace} @keyframes driveAlong{0%{left:8%}50%{left:80%}100%{left:8%}} .truck-driving{animation:driveAlong 4s ease-in-out infinite} select,input{font-family:'Inter',sans-serif} select:focus,input:focus{border-color:" + C.amber + " !important} @media(max-width:640px){.cargo-grid{grid-template-columns:1fr !important}}"}</style>
 
-      <Header onLogout={onLogout} />
+      <Header onLogout={onLogout} onProfile={() => setProfileOpen(true)} />
 
-      {reviewModal && (
+      {profileOpen && (
+<ProfilePage user={currentUser} onClose={() => setProfileOpen(false)} onUserUpdate={(u) => setCurrentUser(u)} />
+)}
+{reviewModal && (
 <ReviewModal orderId={reviewModal.orderId} reviewerRole={reviewModal.role} onClose={() => setReviewModal(null)} onDone={() => setReviewModal(null)} />
 )}
 {view === 'pricing' ? (
