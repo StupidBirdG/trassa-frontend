@@ -280,6 +280,7 @@ export default function TrassaApp({ user, onLogout }) {
   const [view, setView] = useState('board');
   const [loading, setLoading] = useState(true);
   const [subBusy, setSubBusy] = useState(false);
+const [reviewModal, setReviewModal] = useState(null);
   const myUserId = user && user.id;
 
   const load = useCallback(async () => {
