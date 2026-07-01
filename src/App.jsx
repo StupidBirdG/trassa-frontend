@@ -43,6 +43,7 @@ for (let i = 0; i < s.length; i++) hash = (hash*31 + s.charCodeAt(i)) % 1000;
 return 150 + (hash % 700);
 }
 const money = (n) => Number(n).toLocaleString('ru-RU') + ' ₸';
+const fmtDate = (d) => { if (!d) return '—'; const dt = new Date(d); return dt.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short', year: 'numeric' }); };
 const inputStyle = { background: C.surfaceAlt, border: '1px solid '+C.border, color: C.text, borderRadius: 6, padding: '8px 10px', fontSize: 12.5, outline: 'none' };
 const selStyle = { ...inputStyle };
 
@@ -132,7 +133,7 @@ return (
 <RouteLine from={cargo.from_city} to={cargo.to_city} distance={dist} status={cargo.status} />
 <div style={{ display:'flex', flexWrap:'wrap', gap:'6px 14px', paddingTop:2 }}>
 <MetaChip icon={<Package size={12}/>}>{cargo.cargo_type}, {cargo.weight_tons} т</MetaChip>
-<MetaChip icon={<Calendar size={12}/>}>{cargo.pickup_date}</MetaChip>
+<MetaChip icon={<Calendar size={12}/>}>{fmtDate(cargo.pickup_date)}</MetaChip>
 <span className="font-mono" style={{ marginLeft:'auto', fontSize:14, fontWeight:700, color:cargo.price_on_request?C.steel:C.amber }}>
 {cargo.price_on_request ? '💬 Запросить цену' : money(cargo.price)}
 </span>
