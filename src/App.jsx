@@ -133,7 +133,9 @@ return (
 <div style={{ display:'flex', flexWrap:'wrap', gap:'6px 14px', paddingTop:2 }}>
 <MetaChip icon={<Package size={12}/>}>{cargo.cargo_type}, {cargo.weight_tons} т</MetaChip>
 <MetaChip icon={<Calendar size={12}/>}>{cargo.pickup_date}</MetaChip>
-<span className="font-mono" style={{ marginLeft:'auto', fontSize:14, fontWeight:700, color:C.amber }}>{money(cargo.price)}</span>
+<span className="font-mono" style={{ marginLeft:'auto', fontSize:14, fontWeight:700, color:cargo.price_on_request?C.steel:C.amber }}>
+{cargo.price_on_request ? '💬 Запросить цену' : money(cargo.price)}
+</span>
 </div>
 {cargo.comment && <div style={{ fontSize:12, color:C.muted, fontStyle:'italic' }}>«{cargo.comment}»</div>}
 
@@ -180,7 +182,7 @@ return (
 )}
 {takenByOther && <div style={{ fontSize:12, color:C.mutedDark }}>Занято другим перевозчиком.</div>}
 {!acceptedBid && myBid && <div style={{ fontSize:12, color:C.amber }}>Ваше предложение {money(myBid.price)} ожидает решения.</div>}
-{!acceptedBid && !myBid && !bidding && <button onClick={()=>setBidding(true)} style={{ fontSize:12, fontWeight:700, color:'#1B1E23', background:C.amber, border:'none', borderRadius:6, padding:'7px 12px', cursor:'pointer' }}>Откликнуться на груз</button>}
+{!acceptedBid && !myBid && !bidding && <button onClick={()=>setBidding(true)} style={{ fontSize:12, fontWeight:700, color:'#1B1E23', background:cargo.price_on_request?C.steel:C.amber, border:'none', borderRadius:6, padding:'7px 12px', cursor:'pointer' }}>{cargo.price_on_request?'Предложить цену':'Откликнуться на груз'}</button>}
 {bidding && (
 <div style={{ display:'flex', flexWrap:'wrap', gap:8, alignItems:'center', marginTop:4 }}>
 <select value={bidTruck} onChange={e=>setBidTruck(e.target.value)} style={selStyle}>{TRUCK_TYPES.map(t=><option key={t} value={t}>{t}</option>)}</select>
@@ -204,7 +206,8 @@ const [pickup_date, setDate] = useState('2026-07-01');
 const [price, setPrice] = useState('');
 const [comment, setComment] = useState('');
 const [busy, setBusy] = useState(false);
-const valid = weight_tons && price && from_city!==to_city;
+const valid = weight_tons && from_city!==to_city;
+const priceOnRequest = !price;
 const submit = async () => {
 if (!valid) return; setBusy(true);
 try { await onSubmit({ from_city, to_city, weight_tons:Number(weight_tons), cargo_type, pickup_date, price:Number(price), comment }); }
@@ -227,12 +230,12 @@ return (
 {field('Вес, тонн', <input type="number" value={weight_tons} onChange={e=>setWeight(e.target.value)} style={inputStyle} placeholder="например 12"/>)}
 {field('Тип груза', <select value={cargo_type} onChange={e=>setType(e.target.value)} style={selStyle}>{CARGO_TYPES.map(c=><option key={c}>{c}</option>)}</select>)}
 {field('Дата подачи', <input type="date" value={pickup_date} onChange={e=>setDate(e.target.value)} style={inputStyle}/>)}
-{field('Цена, ₸', <input type="number" value={price} onChange={e=>setPrice(e.target.value)} style={inputStyle} placeholder="например 300000"/>)}
+{field('Цена, ₸ (необязательно)', <input type="number" value={price} onChange={e=>setPrice(e.target.value)} style={inputStyle} placeholder="оставьте пустым чтобы запросить цену"/>)}
 </div>
 {field('Комментарий', <input type="text" value={comment} onChange={e=>setComment(e.target.value)} style={inputStyle} placeholder="особые условия, CMR, таможня..."/>)}
 {intlRoute && <div style={{ fontSize:11, color:C.steel, background:C.steelDim, borderRadius:6, padding:'8px 10px' }}>🌍 Международный рейс — укажите в комментарии наличие CMR и разрешений</div>}
 {from_city===to_city && <div style={{ fontSize:11, color:C.rust }}>Город отправления и назначения не должны совпадать.</div>}
-<button onClick={submit} disabled={!valid||busy} style={{ alignSelf:'flex-start', fontWeight:700, fontSize:12.5, color:valid?'#1B1E23':C.mutedDark, background:valid?(intlRoute?C.steel:C.amber):C.surfaceAlt, border:'1px solid '+(valid?(intlRoute?C.steel:C.amber):C.border), borderRadius:7, padding:'9px 16px', cursor:valid?'pointer':'not-allowed' }}>{busy?'...':'Опубликовать на бирже'}</button>
+<button onClick={submit} disabled={!valid||busy} style={{ alignSelf:'flex-start', fontWeight:700, fontSize:12.5, color:valid?'#1B1E23':C.mutedDark, background:valid?(priceOnRequest?C.steel:(intlRoute?C.steel:C.amber)):C.surfaceAlt, border:'1px solid '+(valid?(priceOnRequest?C.steel:(intlRoute?C.steel:C.amber)):C.border), borderRadius:7, padding:'9px 16px', cursor:valid?'pointer':'not-allowed' }}>{busy?'...':(priceOnRequest?'Запросить цену у перевозчиков':'Опубликовать на бирже')}</button>
 </div>
 );
 }
